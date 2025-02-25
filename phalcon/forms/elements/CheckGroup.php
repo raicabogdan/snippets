@@ -45,10 +45,6 @@ class CheckGroup extends AbstractElement
     protected string $containerClass = '';
     protected string $labelClass = '';
     protected string $inputClass = '';
-    public function __construct(string $name, array $attributes = [])
-    {
-        parent::__construct($name, $attributes);
-    }
 
     public function render(array $attributes = []): string
     {
@@ -97,7 +93,7 @@ ELEMENT;
         return $rendered;
     }
 
-    public function resetAttributes($attributes): void
+    private function resetAttributes($attributes): void
     {
         if (isset($attributes['type'])) {
             $this->type = match ($attributes['type']) {
