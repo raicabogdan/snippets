@@ -68,7 +68,7 @@ class Breadcrumbs
      * ```
      */
     public function setTemplate(
-        string $homeTemplate,
+        string $homeTemplate = '<dt><a href="%link%">%label%</a></dt>',
         ?string $linkTemplate = null,
         ?string $lastTemplate = null,
     ): Breadcrumbs {
