@@ -24,7 +24,7 @@ use Phalcon\Forms\Element\AbstractElement;
  *         'label' => 'some_label_class',
  *     ],
  *     'name' => 'checkbox_name[]', // required for checkbox with multiple selections
- *     'checked' => 'value_option2',
+ *     'checked' => 'value_option2', // ['option1', 'option2'] for checking checkboxes use array
  *     'required' => '',
  * ]));
  *
@@ -76,7 +76,12 @@ class CheckGroup extends AbstractElement
             $key = strtolower($elementNameIdPrefix.'_'.$key);
             $value = $element['value'] ?? 0;
             $label = $element['label'] ?? '';
-            $checked = $value == $checkedValue ? ' checked' : '';
+
+            if (is_array($checkedValue)) {
+                $checked = in_array($value, $checkedValue) ? ' checked' : '';
+            } else {
+                $checked = $value == $checkedValue ? ' checked' : '';
+            }
 
             $rendered = rtrim($rendered); // clear the last empty line
             $rendered .=<<<ELEMENT
