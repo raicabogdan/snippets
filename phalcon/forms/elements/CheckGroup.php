@@ -1,8 +1,9 @@
 <?php
 
-namespace App\Modules\Portal\Forms\Elements;
+namespace App\Forms\Elements;
 
 use Phalcon\Forms\Element\AbstractElement;
+
 /*
  * A correct way to add checkbox and radio groups
  *
@@ -12,10 +13,12 @@ use Phalcon\Forms\Element\AbstractElement;
  *         'option1' => [
  *             'label' => 'label_option1',
  *             'value' => 'value_option1',
+ *              'checked' => true,
  *         ],
  *         'option2' => [
  *             'label' => 'label_option2',
  *             'value' => 'value_option2',
+ *             'checked' => false,
  *         ]
  *     ],
  *     'class' => [
@@ -24,7 +27,6 @@ use Phalcon\Forms\Element\AbstractElement;
  *         'label' => 'some_label_class',
  *     ],
  *     'name' => 'checkbox_name[]', // required for checkbox with multiple selections
- *     'checked' => 'value_option2', // ['option1', 'option2'] for checking checkboxes use array
  *     'required' => '',
  * ]));
  *
@@ -41,7 +43,7 @@ use Phalcon\Forms\Element\AbstractElement;
 class CheckGroup extends AbstractElement
 {
     protected array $data = [];
-    protected string $type = "checkbox";
+    protected string $type = 'checkbox';
     protected string $containerClass = '';
     protected string $labelClass = '';
     protected string $inputClass = '';
@@ -62,38 +64,27 @@ class CheckGroup extends AbstractElement
             $required = ' required';
         }
 
-        $checkedValue = $this->getValue();
-
-        if (is_null($checkedValue) && isset($attributes['checked'])) {
-            $checkedValue = $attributes['checked'];
-        }
-
         $elementName = !isset($attributes['name']) ? $this->getName() : $attributes['name'];
         $elementNameIdPrefix = rtrim($elementName, '[]');
-        $rendered = '<div class="'. $this->containerClass .'">';
+        $rendered = '<div class="'.$this->containerClass.'">';
 
-        foreach($this->data as $key => $element) {
+        foreach ($this->data as $key => $element) {
             $key = strtolower($elementNameIdPrefix.'_'.$key);
             $value = $element['value'] ?? 0;
             $label = $element['label'] ?? '';
-
-            if (is_array($checkedValue)) {
-                $checked = in_array($value, $checkedValue) ? ' checked' : '';
-            } else {
-                $checked = $value == $checkedValue ? ' checked' : '';
-            }
+            $checked = isset($element['checked']) && $element['checked'] === true ? ' checked' : '';
 
             $rendered = rtrim($rendered); // clear the last empty line
-            $rendered .=<<<ELEMENT
+            $rendered .= <<<ELEMENT
 
     <div class="inline relative z-0">
-        <input type="{$this->type}" id="{$key}" name="{$elementName}" value="$value" class="{$this->inputClass}"$required$checked>
-        <label for="{$key}" class="{$this->labelClass}">{$label}</label>
+        <input type="{$this->type}" id="{$key}" name="{$elementName}" value="$value"{$this->inputClass}$required$checked>
+        <label for="{$key}"{$this->labelClass}>{$label}</label>
     </div>
 
 ELEMENT;
         }
-        $rendered .= "</div>";
+        $rendered .= '</div>';
 
         return $rendered;
     }
@@ -103,7 +94,7 @@ ELEMENT;
         if (isset($attributes['type'])) {
             $this->type = match ($attributes['type']) {
                 'checkbox' => 'checkbox',
-                default => 'radio',
+                default    => 'radio',
             };
         }
         if (isset($attributes['data'])) {
@@ -111,9 +102,16 @@ ELEMENT;
         }
         if (isset($attributes['class'])) {
             if (is_array($attributes['class'])) {
+
                 $this->containerClass = $attributes['class']['container'] ?? $this->containerClass;
-                $this->inputClass = $attributes['class']['input'] ?? $this->inputClass;
+                $this->inputClass .= $attributes['class']['input'] ?? $this->inputClass;
+                if ($this->inputClass !== '') {
+                    $this->inputClass = ' class="'.$this->inputClass.'"';
+                }
                 $this->labelClass = $attributes['class']['label'] ?? $this->labelClass;
+                if ($this->inputClass !== '') {
+                    $this->labelClass = ' class="'.$this->inputClass.'"';
+                }
             }
             if (is_string($attributes['class'])) {
                 $this->inputClass = $attributes['class'];
