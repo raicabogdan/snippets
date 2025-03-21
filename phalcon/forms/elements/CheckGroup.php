@@ -66,13 +66,14 @@ class CheckGroup extends AbstractElement
 
         $elementName = !isset($attributes['name']) ? $this->getName() : $attributes['name'];
         $elementNameIdPrefix = rtrim($elementName, '[]');
-        $rendered = '<div class="'.$this->containerClass.'">';
-
+        $rendered = '';
         foreach ($this->data as $key => $element) {
+            $rendered .= '<div'.$this->containerClass.'>';
+
             $key = strtolower($elementNameIdPrefix.'_'.$key);
             $value = $element['value'] ?? 0;
             $label = $element['label'] ?? '';
-            $checked = isset($element['checked']) && $element['checked'] === true ? ' checked' : '';
+            $checked = isset($element['checked']) && $element['checked'] ? ' checked' : '';
 
             $rendered = rtrim($rendered); // clear the last empty line
             $rendered .= <<<ELEMENT
@@ -83,8 +84,8 @@ class CheckGroup extends AbstractElement
     </div>
 
 ELEMENT;
+            $rendered .= '</div>';
         }
-        $rendered .= '</div>';
 
         return $rendered;
     }
@@ -102,15 +103,17 @@ ELEMENT;
         }
         if (isset($attributes['class'])) {
             if (is_array($attributes['class'])) {
-
                 $this->containerClass = $attributes['class']['container'] ?? $this->containerClass;
+                if ('' !== $this->containerClass) {
+                    $this->containerClass = ' class="'.$this->containerClass.'"';
+                }
                 $this->inputClass .= $attributes['class']['input'] ?? $this->inputClass;
-                if ($this->inputClass !== '') {
+                if ('' !== $this->inputClass) {
                     $this->inputClass = ' class="'.$this->inputClass.'"';
                 }
                 $this->labelClass = $attributes['class']['label'] ?? $this->labelClass;
-                if ($this->inputClass !== '') {
-                    $this->labelClass = ' class="'.$this->inputClass.'"';
+                if ('' !== $this->labelClass) {
+                    $this->labelClass = ' class="'.$this->labelClass.'"';
                 }
             }
             if (is_string($attributes['class'])) {
