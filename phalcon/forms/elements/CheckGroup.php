@@ -67,6 +67,9 @@ class CheckGroup extends AbstractElement
         $elementName = !isset($attributes['name']) ? $this->getName() : $attributes['name'];
         $elementNameIdPrefix = rtrim($elementName, '[]');
         $rendered = '';
+        if ($this->type === 'checkbox') {
+            $rendered = '<input type="hidden" name="'.$elementName.'" value="" />';
+        }
         foreach ($this->data as $key => $element) {
             $rendered .= '<div'.$this->containerClass.'>';
 
